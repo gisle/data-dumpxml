@@ -7,7 +7,7 @@ require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK=qw(dump_xml dump_xml2 dump);
 
-$VERSION = "1.04";  # $Date$
+$VERSION = "1.05";  # $Date$
 
 # configuration
 use vars qw($INDENT $INDENT_STYLE $XML_DECL $CPAN $NAMESPACE $NS_PREFIX $SCHEMA_LOCATION $DTD_LOCATION);
@@ -315,7 +315,7 @@ based on C<Data::Dump>.
 The C<Data::Dump> module was written by Gisle Aas, based on
 C<Data::Dumper> by Gurusamy Sarathy <gsar@umich.edu>.
 
- Copyright 1998-2002 Gisle Aas.
+ Copyright 1998-2003 Gisle Aas.
  Copyright 1996-1998 Gurusamy Sarathy.
 
 This library is free software; you can redistribute it and/or

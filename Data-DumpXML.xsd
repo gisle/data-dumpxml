@@ -1,7 +1,7 @@
 <schema
   xmlns='http://www.w3.org/2001/XMLSchema'
-  targetNamespace='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.03.xsd'
-  xmlns:t='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.03.xsd'>
+  targetNamespace='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.05.xsd'
+  xmlns:t='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.05.xsd'>
 
   <attributeGroup name='stdattlist'>
    <attribute name='id' type='ID' use='optional'/>
