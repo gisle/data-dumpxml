@@ -7,7 +7,7 @@ require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK=qw(dump_xml dump);
 
-$VERSION = "0.01";  # $Date$
+$VERSION = "0.02";  # $Date$
 
 use vars qw($INDENT);  # configuration
 $INDENT = " " unless defined $INDENT;
@@ -120,7 +120,7 @@ sub format_list
 # put a string value in double quotes
 sub quote {
     local($_) = shift;
-    s/\"/&qout;/g;
+    s/\"/&quot;/g;
     s/([^\040-\176])/sprintf("&#x%x;", ord($1))/ge;
     return qq("$_");
 }
