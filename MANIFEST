@@ -4,7 +4,7 @@ DumpXML/Parser.pm
 MANIFEST
 Makefile.PL
 README
-dumpxml-parse
+TODO
 dumpxml.dtd
 t/basic.t
 t/dump-restore.t
