@@ -19,7 +19,6 @@
 
 <!ATTLIST undef %stdattlist;>
 <!ATTLIST ref   %stdattlist;>
-<!ATTLIST undef %stdattlist;>
 <!ATTLIST array %stdattlist;>
 <!ATTLIST hash  %stdattlist;>
 <!ATTLIST glob  %stdattlist;>
