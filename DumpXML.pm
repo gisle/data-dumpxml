@@ -68,7 +68,7 @@ sub _dump
 	    unless defined $$rval;
 	return "<ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
 	    if ref $$rval;
-	if ($$rval =~ /[\x0-\x8\xB\xC\xE-\x1F\x7f-\x9f]/) {
+	if ($$rval =~ /[\x00-\x08\x0B\x0C\x0E-\x1F\x7f-\x9f]/) {
 	    # these chars can't be represented in XML at all
 	    require MIME::Base64;
 	    my $nl = (length $$rval < 40) ? "" : "\n";
