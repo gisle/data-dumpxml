@@ -23,7 +23,6 @@ sub dump_xml
     local %ref;
     local $count = 0;
     my $out = qq(<?xml version="1.0" encoding="US-ASCII"?>\n);
-    #$out .= `cat dumpxml.dtd`;
     $out .= qq(<!DOCTYPE data SYSTEM "dumpxml.dtd">\n);
     #$out .= qq(<data time="@{[time2iso()]}">);
     $out .= "<data>";
@@ -61,7 +60,7 @@ sub _dump
     $seen{$id} = ++$count;
 
     $class = $class ? " class=" . quote($class) : "";
-    $id = "\1";  # magic that is removed or expanded to ' id="1"' in the end.
+    $id = "\1";  # magic that is removed or expanded to ' id="r1"' in the end.
 
     if ($type eq "SCALAR") {
 	return "<undef$class$id/>"
@@ -155,19 +154,45 @@ list of something as argument and produce a string as result.  For
 compatibility with C<Data::Dump> there is also an alias dump().
 
 The string returned is an XML document that represents any perl data
-structure passed in.  The following DTD (yeah, I know this is not
-really a DTD yet) is used:
+structure passed in.  The following DTD is used:
 
-  <data>(undef|str|ref|alias)*</data>
-  <undef/>
-  <str>...</str>
-  <ref>(undef|str|ref|alias|array|hash|glob|code)</ref>
-  <alias/>
-  <array>(undef|str|ref|alias)*</array>
-  <hash>(key (undef|str|ref|alias))*</hash>
-  <key>...</key>
-  <glob/>
-  <code/>
+  <!DOCTYPE data [
+   <!ENTITY % listtype "undef | str | ref | alias">
+
+   <!ELEMENT data (%listtype;)*>
+   <!ELEMENT undef EMPTY>
+   <!ELEMENT str (#PCDATA)>
+   <!ELEMENT ref (%listtype; | array | hash | glob | code)>
+   <!ELEMENT alias EMPTY>
+   <!ELEMENT array (%listtype;)*>
+   <!ELEMENT hash  (key, (%listtype;))*>
+   <!ELEMENT key (#PCDATA)>
+   <!ELEMENT glob EMPTY>
+   <!ELEMENT code EMPTY>
+
+   <!ENTITY % stdattlist '
+       id ID #IMPLIED
+       class CDATA #IMPLIED
+   '>
+
+   <!ENTITY % encoding '
+       encoding (plain|base64) "plain"
+   '>
+
+   <!ATTLIST undef %stdattlist;>
+   <!ATTLIST ref %stdattlist;>
+   <!ATTLIST undef %stdattlist;>
+   <!ATTLIST array %stdattlist;>
+   <!ATTLIST hash %stdattlist;>
+   <!ATTLIST glob %stdattlist;>
+   <!ATTLIST code %stdattlist;>
+
+   <!ATTLIST str %stdattlist;
+                 %encoding;>
+   <!ATTLIST key %encoding;>
+
+   <!ATTLIST alias ref IDREF #IMPLIED>
+  ]>
 
 If dump_xml() is called in void context, then the dump will be printed on
 STDERR instead of being returned.
