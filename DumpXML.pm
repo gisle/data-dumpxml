@@ -10,19 +10,24 @@ require Exporter;
 $VERSION = "0.01";  # $Date$
 
 use overload ();
-use vars qw(%seen $count);
+use vars qw(%seen %ref $count);
 
 #use HTTP::Date qw(time2iso);
 
 sub dump_xml
 {
     local %seen;
+    local %ref;
     local $count = 0;
     my $out = qq(<?xml version="1.0"?>\n);
     #$out .= qq(<data time="@{[time2iso()]}">);
     $out .= "<data>";
     $out .= format_list(map _dump($_), @_);
     $out .= "</data>\n";
+
+    $count = 0;
+    $out =~ s/\01/$ref{++$count} ? qq( id="$ref{$count}") : ""/ge;
+
     print STDERR $out unless defined wantarray;
     $out;
 }
@@ -43,12 +48,15 @@ sub _dump
     } else {
 	die "Can't parse " . overload::StrVal($rval);
     }
-    
-    return qq(<alias id="$seen{$id}"/>) if exists $seen{$id};
+
+    if (my $seq = $seen{$id}) {
+	my $ref_no = $ref{$seq} || ($ref{$seq} = keys(%ref) + 1);
+	return qq(<alias id="$ref_no"/>);
+    }
     $seen{$id} = ++$count;
 
     $class = $class ? " class=" . quote($class) : "";
-    $id = qq( id="$count");
+    $id = "\1";  # magic that is removed or expanded to ' id="1"' in the end.
 
     if ($type eq "SCALAR") {
 	return "<undef$class$id/>"
