@@ -30,7 +30,7 @@ sub Start
 {
     my($p, $tag, %attr) = @_;
     $p->{in_str}++ if $tag eq "str" || $tag eq "key";
-    my $obj = [$tag, \%attr];
+    my $obj = [\%attr];
     push(@{$p->{stack}[-1]}, $obj);
     push(@{$p->{stack}}, $obj);
 }
@@ -46,59 +46,13 @@ sub End
 {
     my($p, $tag) = @_;
     my $obj = pop(@{$p->{stack}});
-    $p->{in_str}-- if $tag eq "str" || $tag eq "key";
-}
+    my $attr = shift(@$obj);
 
-sub Final
-{
-    my $p = shift;
-    my $data = $p->{dump_data}[0];
-    die unless $data->[0] eq "data";
-    $data->[0] = "array";
-    return fix($data, {});
-}
+    my $ref;
 
-sub fix
-{
-    my($e, $alias) = @_;
-    my $type = shift @$e;
-    my $attr = shift @$e;
-
-    return $alias->{$attr->{ref} }if $type eq "alias";
-
-    #print "T $type\n";
-    my $ref;  # a reference to the thing
-
-    if ($type eq "ref") {
-	$e = $e->[0];
-	my $val = fix($e, $alias);
-	$ref = \$val;
-    }
-    elsif ($type eq "array") {
-	for (my $i = 0; $i < @$e; $i++) {
-	    my $cur = $e->[$i];
-	    $cur = fix($cur, $alias);
-	    &av_store($e, $i, $$cur);
-	}
-	$ref = $e;
-    }
-    elsif ($type eq "hash") {
-	my %hv;
-	for (my $i = 0; $i < @$e; $i += 2) {
-	    my $key = $e->[$i];
-	    die unless $key->[0] eq "key";
-	    $key->[0] = "str";
-	    $key = ${fix($key, $alias)};
-
-	    my $val = $e->[$i+1];
-	    my $val_type = $val->[0];
-	    $val = fix($val, $alias);
-	    hv_store(%hv, $key, $$val);
-	}
-	$ref = \%hv;
-    }
-    elsif ($type eq "str") {
-	my $val = join("", @$e);
+    if ($tag eq "str" || $tag eq "key") {
+	$p->{in_str}--;
+        my $val = join("", @$obj);
         if (my $enc = $attr->{encoding}) {
             if ($enc eq "base64") {
                 require MIME::Base64;
@@ -110,22 +64,55 @@ sub fix
         }
 	$ref = \$val;
     }
-    elsif ($type eq "undef") {
+    elsif ($tag eq "ref") {
+	my $val = $obj->[0];
+	$ref = \$val;
+    }
+    elsif ($tag eq "array" || $tag eq "data") {
+	my @val;
+	my $i = 0;
+	for (@$obj) {
+	    av_store(@val, $i++, $$_);
+	}
+	$ref = \@val;
+    }
+    elsif ($tag eq "hash") {
+	my %val;
+	while (@$obj) {
+	    my $keyref = shift @$obj;
+	    my $valref = shift @$obj;
+	    hv_store(%val, $$keyref, $$valref);
+	}
+	$ref = \%val;
+    }
+    elsif ($tag eq "undef") {
 	my $val = undef;
 	$ref = \$val;
     }
+    elsif ($tag eq "alias") {
+	$ref = $p->{alias}{$attr->{ref}};
+    }
     else {
-	my $val = "XXX $type";
+	my $val = "*** $tag ***";
 	$ref = \$val;
     }
+
+    $p->{stack}[-1][-1] = $ref;
 
     if (my $c = $attr->{class}) {
 	bless $ref, $c;
     }
 
     if (my $id = $attr->{id}) {
-	$alias->{$id} = $ref;
+	$p->{alias}->{$id} = $ref;
     }
-
-    return $ref;
 }
+
+sub Final
+{
+    my $p = shift;
+    my $data = $p->{dump_data}[0];
+    return $data;
+}
+
+1;
