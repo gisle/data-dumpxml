@@ -20,18 +20,38 @@ my @tests = (
 );
 
 
-print "1.." . @tests . "\n";
+print "1.." . (@tests + 2) . "\n";
 my $testno = 1;
 for (@tests) {
    my $xml1 = dump_xml(@$_);
-   print $xml1;
+   #print $xml1;
 
    my $restore = Data::DumpXML::Parser->new->parse($xml1);
    my $xml2 = dump_xml(@$restore);
 
    unless ($xml1 eq $xml2) {
+       print $xml1;
        print $xml2;
        print "not ";
    }
    print "ok " . $testno++ . "\n";
 }
+
+
+#print $xml;
+
+print "Testing Blesser...\n";
+my $xml = dump_xml($obj);
+my $thistest = $testno++;
+my $p = Data::DumpXML::Parser->new(Blesser => sub {
+				       my($o, $c) = @_;
+				       print "not " unless ref($o) eq "HASH"
+                                                       and $o->{foo} == 33
+					               and $c eq "Obj";
+				       print "ok $thistest\n";
+				       bless $o, $c . "::Bar";
+				   });
+my $res = $p->parse($xml);
+
+print "not " unless ref($res->[0]) eq "Obj::Bar";
+print "ok " . $testno++ . "\n";

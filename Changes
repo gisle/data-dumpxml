@@ -1,3 +1,13 @@
+2000-09-19  Gisle Aas <gisle@ActiveState.com>
+
+   Release 1.01
+
+   Added Blesser argument to Data::DumpXML::Parser.  This can
+   be used to guard which objects are restored.  Patch by
+   Jonathan Stowe <gellyfish@gellyfish.com>.
+
+
+
 2000-09-11  Gisle Aas <gisle@ActiveState.com>
 
    Release 1.00

@@ -3,7 +3,7 @@ package Data::DumpXML::Parser;
 use strict;
 use vars qw($VERSION @ISA);
 
-$VERSION = "0.02";
+$VERSION = "1.00";
 
 require XML::Parser;
 @ISA=qw(XML::Parser);
@@ -98,8 +98,16 @@ sub End
 
     $p->{stack}[-1][-1] = $ref;
 
-    if (my $c = $attr->{class}) {
-	bless $ref, $c;
+    if (my $class = $attr->{class}) {
+	if (exists $p->{Blesser}) {
+	    my $blesser = $p->{Blesser};
+	    if (ref($blesser) eq "CODE") {
+		&$blesser($ref, $class);
+	    }
+	}
+	else {
+	    bless $ref, $class;
+	}
     }
 
     if (my $id = $attr->{id}) {
@@ -132,9 +140,30 @@ Data::DumpXML::Parser - Restore data dumped by Data::DumpXML
 =head1 DESCRIPTION
 
 The C<Data::DumpXML::Parser> is an C<XML::Parser> subclass that will
-recreate the data structure from the XML produced by C<Data::DumpXML>.
-A reference to an array of the values dumped are returned by the
-parsefile() method.
+recreate the data structure from the XML document produced by
+C<Data::DumpXML>.  The parserfile() method returns a reference to an
+array of the values dumped.
+
+The constructor method new() takes a single additional argument to
+that of C<XML::Parser> :
+
+=over
+
+=item Blesser => CODEREF
+
+A subroutine that is invoked for blessing of restored objects.  The
+subroutine is invoked with two arguments; a reference to the object
+and a string containing the class name.  If not provided the built in
+C<bless> function is used.
+
+For situations where the input file cannot necessarily be trusted and
+blessing arbitrary Classes might give the ability of malicious input
+to exploit the DESTROY methods of modules used by the code it is a
+good idea to provide an noop blesser:
+
+  my $p = Data::DumpXML::Parser->new(Blesser => sub {});
+
+=back
 
 =head1 SEE ALSO
 
