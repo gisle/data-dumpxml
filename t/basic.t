@@ -1,4 +1,4 @@
-print "1..5\n";
+print "1..6\n";
 
 use strict;
 use Data::DumpXML qw(dump_xml);
@@ -32,6 +32,10 @@ $xml = remove_space(dump_xml($a, \@a));
 print "not " unless $xml =~ m,<data><ref><str id="r1">2</str></ref><ref><array><str>1</str><alias ref="r1"/><str>3</str></array></ref></data>,;
 print "ok 5\n";
 
+# test escaping 
+$xml = remove_space(dump_xml(["&", "<>", "]]>"]));
+print "not " unless $xml =~ m,<data><ref><array><str>&amp;</str><str>&lt;></str><str>]]&gt;</str></array></ref></data>,;
+print "ok 6\n";
 
 #------------
 

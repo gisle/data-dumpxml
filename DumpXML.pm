@@ -117,6 +117,7 @@ sub quote {
     local($_) = shift;
     s/&/&amp;/g;
     s/\"/&quot;/g;
+    s/]]>/]]&gt;/g;
     s/</&lt;/g;
     s/([^\040-\176])/sprintf("&#x%x;", ord($1))/ge;
     return qq("$_");
@@ -136,6 +137,7 @@ sub esc {
 
     s/&/&amp;/g;
     s/</&lt;/g;
+    s/]]>/]]&gt;/g;
     s/([^\040-\176])/sprintf("&#x%x;", ord($1))/ge;
     return $_, "";
 }
