@@ -1,8 +1,10 @@
 Changes
 DumpXML.pm
+DumpXML/Parser.pm
 MANIFEST
 Makefile.PL
 README
+dumpxml-parse
 dumpxml.dtd
 eg1
 eg2
