@@ -185,10 +185,10 @@ Data::DumpXML - Dump arbitrary data structures as XML
 
 =head1 DESCRIPTION
 
-This module provide a single function called dump_xml() that takes a
-list of perl values as argument and produce a string as result.
-The string returned is an XML document that represents any perl data
-structures passed in.  Reference loops are handled correctly.
+This module provides a single function called dump_xml() that takes a
+list of Perl values as its argument and produces a string as its result.
+The string returned is an XML document that represents any Perl data
+structures passed to the function.  Reference loops are handled correctly.
 
 The following data model is used:
 
@@ -198,15 +198,15 @@ The following data model is used:
    array: scalar*
    hash: (key scalar)*
 
-The distribution comes with an XML Schema and a DTD that more formally
+The distribution comes with an XML schema and a DTD that more formally
 describe this structure.
 
-As an example of the XML documents produced; the following call:
+As an example of the XML documents produced, the following call:
 
   $a = bless [1,2], "Foo";
   dump_xml($a);
 
-will produce:
+produces:
 
   <?xml version="1.0" encoding="US-ASCII"?>
   <data xmlns="http://www.cpan.org/.../Data-DumpXML.xsd">
@@ -218,18 +218,18 @@ will produce:
    </ref>
   </data>
 
-If dump_xml() is called in void context, then the dump will be printed
-on STDERR automatically.  For compatibility with C<Data::Dump> there
-is also an alias for dump_xml() simply called dump().
+If dump_xml() is called in a void context, then the dump is printed
+on STDERR automatically.  For compatibility with C<Data::Dump>, there
+is also an alias for dump_xml() called simply dump().
 
-The C<Data::DumpXML::Parser> is a class that can restore
+C<Data::DumpXML::Parser> is a class that can restore
 data structures dumped by dump_xml().
 
 
 =head2 Configuration variables
 
 The generated XML is influenced by a set of configuration variables.
-If you modify them, then it is a good idea to localize the effect. E.g.:
+If you modify them, then it is a good idea to localize the effect. For example:
 
   sub my_dump_xml {
       local $Data::DumpXML::INDENT = "";
@@ -249,7 +249,7 @@ The variables are:
 You can set the variable $Data::DumpXML::INDENT to control the amount
 of indenting.  The variable contains the whitespace you want to be
 used for each level of indenting.  The default is a single space.  To
-suppress indenting set it as "".
+suppress indenting, set it to "".
 
 =item $Data::DumpXML::INDENT_STYLE
 
@@ -266,27 +266,27 @@ declaration.
 
 =item $Data::DumpXML::NAMESPACE
 
-This variable contains the namespace used for the the XML elements.
+This variable contains the namespace used for the XML elements.
 The default is to let this be a URI that actually resolve to the XML
-Schema on CPAN.  Set it to "" to disable use of namespaces.
+schema on CPAN.  Set it to "" to disable use of namespaces.
 
 =item $Data::DumpXML::NS_PREFIX
 
 This variable contains the namespace prefix to use on the elements.
-The default is "" which means that a default namespace will be declared.
+The default is "", which means that a default namespace will be declared.
 
 =item $Data::DumpXML::SCHEMA_LOCATION
 
-This variable contains the location of the XML Schema.  If this
-variable is non-empty, then an C<xsi:schemaLocation> attribute will be
-added the top level C<data> element.  The default is to not include
-this as the location can be guessed from the default XML namespace
+This variable contains the location of the XML schema.  If this
+variable is non-empty, then an C<xsi:schemaLocation> attribute is
+added to the top level C<data> element.  The default is not to include
+this, as the location can be inferred from the default XML namespace
 used.
 
 =item $Data::DumpXML::DTD_LOCATION
 
 This variable contains the location of the DTD.  If this variable is
-non-empty, then a <!DOCTYPE ...> will be included in the output.  The
+non-empty, then a <!DOCTYPE ...> is included in the output.  The
 default is to point to the DTD on CPAN.  Set it to "" to suppress the
 <!DOCTYPE ...> line.
 
@@ -294,13 +294,13 @@ default is to point to the DTD on CPAN.  Set it to "" to suppress the
 
 =head1 BUGS
 
-Class names with 8-bit characters will be dumped as Latin-1, but
+Class names with 8-bit characters are dumped as Latin-1, but
 converted to UTF-8 when restored by the Data::DumpXML::Parser.
 
 The content of globs and subroutines are not dumped.  They are
-restored as the strings; "** glob **" and "** code **".
+restored as the strings "** glob **" and "** code **".
 
-LVALUE and IO objects are not dumped at all.  They will simply
+LVALUE and IO objects are not dumped at all.  They simply
 disappear from the restored data structure.
 
 =head1 SEE ALSO
