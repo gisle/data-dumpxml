@@ -81,6 +81,10 @@ sub End
     elsif ($tag eq "hash") {
 	$p->{stack}[-1][-1] = ["hash", ($objref = { @$obj })];
     }
+    elsif ($tag eq "alias") {
+	my $id = $attr->{id};
+	&av_store($p->{stack}[-1], -1, ${$p->{id}{$id}});
+    }
     else {
 	# catch anything else (glob/code/...)
 	$p->{stack}[-1][-1] = undef;
@@ -89,6 +93,10 @@ sub End
     if (my $class = $attr->{class}) {
 	#print "BLESS $objref\n";
 	bless $objref, $class;
+    }
+
+    if ((my $id = $attr->{id}) && $tag ne "alias") {
+	$p->{id}{$id} = $objref;
     }
 }
 
