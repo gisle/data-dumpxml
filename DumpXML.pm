@@ -7,7 +7,7 @@ require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK=qw(dump_xml dump);
 
-$VERSION = "0.02";  # $Date$
+$VERSION = "1.00";  # $Date$
 
 use vars qw($INDENT);  # configuration
 $INDENT = " " unless defined $INDENT;
@@ -62,7 +62,7 @@ sub _dump
     $class = $class ? " class=" . quote($class) : "";
     $id = "\1";  # magic that is removed or expanded to ' id="r1"' in the end.
 
-    if ($type eq "SCALAR") {
+    if ($type eq "SCALAR" || $type eq "REF") {
 	return "<undef$class$id/>"
 	    unless defined $$rval;
 	return "<ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
