@@ -63,6 +63,13 @@ sub _dump
 	    unless defined $$rval;
 	return "<ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
 	    if ref $$rval;
+	if ($$rval =~ /[\x0-\x8\xB\xC\xE-\x1F\x7f-\x9f]/) {
+	    # these chars can't be represented in XML at all
+	    require MIME::Base64;
+	    my $nl = (length $$rval < 40) ? "" : "\n";
+	    my $b64 = MIME::Base64::encode($$rval, $nl);
+	    return qq(<str$class encoding="base64"$id>$nl$b64</str>);
+	}
 	return "<str$class$id>" . esc($$rval) . "</str>";
     }
     elsif ($type eq "ARRAY") {
@@ -159,9 +166,9 @@ STDERR instead of being returned.
 =head1 BUGS
 
 It appears that character entity references for most characters below
-32 ('space') is illegal.  This means that we should probably introduce
-a new element like <base64>...</base64> so that we are able to encode
-binary data for <str> content.
+32 ('space') is illegal.  This can still be generated for hash keys.
+Should switch to base64 encoding here too when strange characters
+occur.
 
 =head1 SEE ALSO
 
