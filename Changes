@@ -1,3 +1,27 @@
+2001-12-30  Gisle Aas <gisle@ActiveState.com>
+
+   Release 1.03
+
+   Enabling of namespace prefix would generate bad XML; a
+   few end tags would end up un-prefixed.  Patch by
+   Jonathan Stowe <gellyfish@gellyfish.com>.
+
+   Setting $INDENT to "", now suppress most newlines in
+   the output too.
+
+   New configuration variable: $INDENT_STYLE
+
+   Documentation improved a bit.
+
+   Data::DumpXML::Parser will not turn on the 'Namespaces'
+   option automatically.
+
+   Data-DumpXML.xsd fixes:
+      - make element 'key' a complex type with simple content
+        (instead of mixed)
+
+
+
 2001-12-11  Gisle Aas <gisle@ActiveState.com>
 
    Release 1.02
