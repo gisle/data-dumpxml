@@ -120,7 +120,7 @@ __END__
 
 =head1 NAME
 
-Data::DumpXML - Dump arbitrary data structures as XML
+Data::DumpXML::Parser - Restore data dumped by Data::DumpXML
 
 =head1 SYNOPSIS
 
