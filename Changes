@@ -4,6 +4,8 @@
 
    Added namespace support.  Added a schema.
 
+   Escape ']]>' when it occurs strings.
+
 
 
 2000-09-19  Gisle Aas <gisle@ActiveState.com>
