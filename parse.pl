@@ -87,7 +87,15 @@ sub End
     }
     elsif ($tag eq "alias") {
 	my $id = $attr->{id};
-	&av_store($p->{stack}[-1], -1, ${$p->{id}{$id}});
+	#print "ALIAS $id\n";
+	eval {
+	    &av_store($p->{stack}[-1], -1, ${$p->{id}{$id}});
+	};
+	if ($@ && $@ =~ /^Not a SCALAR reference/) {
+	    # assuming the thing above is <ref>...
+	    $p->{stack}[-1][-1] = ["alias", $p->{id}{$id}];
+	}
+	$objref = \$p->{stack}[-1][-1];
     }
     else {
 	# catch anything else (glob/code/...)
