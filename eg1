@@ -5,5 +5,7 @@ $req = HTTP::Request->new(GET => "http://foo/");
 $req->date(time);
 $req->content("\0\0\x9" x 30);
 
+$Data::DumpXML::INDENT_STYLE = "Lisp";
+
 print dump_xml2($req, $req);
 
