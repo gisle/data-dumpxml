@@ -8,7 +8,7 @@
    <attribute name='class' type='string' use='optional'/>
   </attributeGroup>
 
-  <attribute name='encoding' use='default' value='plain'>
+  <attribute name='encoding' default='plain'>
    <simpleType>
     <restriction base='string'>
      <enumeration value='plain'/>
