@@ -67,14 +67,8 @@ sub _dump
 	    unless defined $$rval;
 	return "<ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
 	    if ref $$rval;
-	if ($$rval =~ /[\x00-\x08\x0B\x0C\x0E-\x1F\x7f-\x9f]/) {
-	    # these chars can't be represented in XML at all
-	    require MIME::Base64;
-	    my $nl = (length $$rval < 40) ? "" : "\n";
-	    my $b64 = MIME::Base64::encode($$rval, $nl);
-	    return qq(<str$class encoding="base64"$id>$nl$b64</str>);
-	}
-	return "<str$class$id>" . esc($$rval) . "</str>";
+	my($str, $enc) = esc($$rval);
+	return "<str$class$id$enc>$str</str>";
     }
     elsif ($type eq "ARRAY") {
 	return "<array$class$id/>" unless @$rval;
@@ -90,7 +84,8 @@ sub _dump
 		$val =~ s/^/$INDENT$INDENT/gm;
 		$out .= $INDENT;
 	    }
-	    $out .= "<key>" . esc($key) . "</key>\n$val\n";
+	    my($str, $enc) = esc($key);
+	    $out .= "<key$enc>$str</key>\n$val\n";
 	}
 	$out .= "</hash>";
 	return $out;
@@ -120,17 +115,29 @@ sub format_list
 # put a string value in double quotes
 sub quote {
     local($_) = shift;
+    s/&/&amp;/g;
     s/\"/&quot;/g;
+    s/</&lt;/g;
     s/([^\040-\176])/sprintf("&#x%x;", ord($1))/ge;
     return qq("$_");
 }
 
 sub esc {
     local($_) = shift;
+    if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7f-\xff]/) {
+	# \x00-\x08\x0B\x0C\x0E-\x1F these chars can't be represented in XML at all
+	# \x7f is special
+	# \x80-\xff will be mangled into UTF-8
+	require MIME::Base64;
+	my $nl = (length($_) < 40) ? "" : "\n";
+	my $b64 = MIME::Base64::encode($_, $nl);
+	return $nl.$b64, qq( encoding="base64");
+    }
+
     s/&/&amp;/g;
     s/</&lt;/g;
     s/([^\040-\176])/sprintf("&#x%x;", ord($1))/ge;
-    return $_;
+    return $_, "";
 }
 
 1;
@@ -149,8 +156,7 @@ Data::DumpXML - Dump arbitrary data structures as XML
 =head1 DESCRIPTION
 
 This module provide a single function called dump_xml() that takes a
-list of something as argument and produce a string as result.  For
-compatibility with C<Data::Dump> there is also an alias dump().
+list of something as argument and produce a string as result.
 
 The string returned is an XML document that represents any perl data
 structure passed in.  The following DTD is used:
@@ -169,14 +175,9 @@ structure passed in.  The following DTD is used:
    <!ELEMENT glob EMPTY>
    <!ELEMENT code EMPTY>
 
-   <!ENTITY % stdattlist '
-       id ID #IMPLIED
-       class CDATA #IMPLIED
-   '>
-
-   <!ENTITY % encoding '
-       encoding (plain|base64) "plain"
-   '>
+   <!ENTITY % stdattlist 'id       ID             #IMPLIED
+                          class    CDATA          #IMPLIED'>
+   <!ENTITY % encoding   'encoding (plain|base64) "plain"'>
 
    <!ATTLIST undef %stdattlist;>
    <!ATTLIST ref %stdattlist;>
@@ -186,25 +187,57 @@ structure passed in.  The following DTD is used:
    <!ATTLIST glob %stdattlist;>
    <!ATTLIST code %stdattlist;>
 
-   <!ATTLIST str %stdattlist;
-                 %encoding;>
+   <!ATTLIST str %stdattlist; %encoding;>
    <!ATTLIST key %encoding;>
 
    <!ATTLIST alias ref IDREF #IMPLIED>
   ]>
 
-If dump_xml() is called in void context, then the dump will be printed on
-STDERR instead of being returned.
+As an example of the XML documents producted; the following call:
+
+  $a = bless [1,2], "Foo";
+  $a->[2] = \$a;
+  $b = $a;
+  dump_xml($a, $b);
+
+will produce:
+
+  <?xml version="1.0" encoding="US-ASCII"?>
+  <data>
+   <ref id="r1">
+    <array class="Foo" id="r2">
+     <str>1</str>
+     <str>2</str>
+     <ref>
+      <alias ref="r1"/></ref></array></ref>
+   <ref>
+    <alias ref="r2"/></ref></data>
+
+If dump_xml() is called in void context, then the dump will be printed
+on STDERR instead of being returned.  For compatibility with
+C<Data::Dump> there is also an alias for dump_xml() simply called
+dump().
+
+You can set the variable $Data::DumpXML::INDENT to control indenting
+before calling dump_xml().  To suppress indenting set it as "".
+
+The C<Data::DumpXML::Parser> is a class that can restore
+datastructures dumped by dump_xml().
 
 =head1 BUGS
 
-Character entity references for most characters below 32 ('space') is
-illegal XML.  This can still be generated for hash keys.  Should
-switch to base64 encoding here too when strange characters occur.
+Class names with 8-bit characters will be dumped as Latin-1, but
+converted to UTF-8 when restored by the Data::DumpXML::Parser.
+
+The content of globs and subroutines are not dumped.  They are
+restored as the strings; "** glob **" and "** code **".
+
+LVALUE and IO objects are not dumped at all.  They will simply
+disappear from the restored data structure.
 
 =head1 SEE ALSO
 
-L<Data::DumpXML::Parser>, L<XML::Parser>, L<Data::Dump>
+L<Data::DumpXML::Parser>, L<XML::Parser>, L<XML::Dumper>, L<Data::Dump>
 
 =head1 AUTHORS
 
