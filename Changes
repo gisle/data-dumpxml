@@ -2,7 +2,9 @@
 
    Release 1.02
 
-   Added namespace support.  Added a schema.
+   Added namespace support based on a patch by Jonathan Stowe.
+
+   Added an XML Schema document that describes the dump format.
 
    Escape ']]>' when it occurs strings.
 
