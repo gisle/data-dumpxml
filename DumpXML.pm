@@ -23,8 +23,6 @@ $DTD_LOCATION = $CPAN . "Data-DumpXML-$VERSION.dtd" unless defined $DTD_LOCATION
 use overload ();
 use vars qw(%seen %ref $count $prefix);
 
-#use HTTP::Date qw(time2iso);
-
 sub dump_xml2 {
     local $DTD_LOCATION = "";
     local $XML_DECL = "";
@@ -40,7 +38,6 @@ sub dump_xml {
     my $out = "";
     $out .= qq(<?xml version="1.0" encoding="US-ASCII"?>\n) if $XML_DECL;
     $out .= qq(<!DOCTYPE data SYSTEM "$DTD_LOCATION">\n) if $DTD_LOCATION;
-    #$out .= qq(<data time="@{[time2iso()]}">);
 
     $out .= "<${prefix}data";
     $out .= " " . ($NS_PREFIX ? "xmlns:$NS_PREFIX" : "xmlns") . qq(="$NAMESPACE")
