@@ -1,37 +1,31 @@
-<!-- DTD for Data::DumpXML -->
+<!-- DTD for Data::DumpXML $Date$ -->
 
-<!ENTITY % listtype "undef | str | ref | alias">
+<!ENTITY % scalar "undef | str | ref | alias">
 
-<!ELEMENT data (%listtype;)*>
+<!ELEMENT data (%scalar;)*>
 <!ELEMENT undef EMPTY>
 <!ELEMENT str (#PCDATA)>
-<!ELEMENT ref (%listtype; | array | hash | glob | code)>
+<!ELEMENT ref (%scalar; | array | hash | glob | code)>
 <!ELEMENT alias EMPTY>
-<!ELEMENT array (%listtype;)*>
-<!ELEMENT hash  (key, (%listtype;))*>
+<!ELEMENT array (%scalar;)*>
+<!ELEMENT hash  (key, (%scalar;))*>
 <!ELEMENT key (#PCDATA)>
 <!ELEMENT glob EMPTY>
 <!ELEMENT code EMPTY>
 
-<!ENTITY % stdattlist '
-   id ID #IMPLIED
-   class CDATA #IMPLIED
-'>
-
-<!ENTITY % encoding '
-    encoding (plain|base64) "plain"
-'>
+<!ENTITY % stdattlist 'id       ID             #IMPLIED
+                       class    CDATA          #IMPLIED'>
+<!ENTITY % encoding   'encoding (plain|base64) "plain"'>
 
 <!ATTLIST undef %stdattlist;>
-<!ATTLIST ref %stdattlist;>
+<!ATTLIST ref   %stdattlist;>
 <!ATTLIST undef %stdattlist;>
 <!ATTLIST array %stdattlist;>
-<!ATTLIST hash %stdattlist;>
-<!ATTLIST glob %stdattlist;>
-<!ATTLIST code %stdattlist;>
+<!ATTLIST hash  %stdattlist;>
+<!ATTLIST glob  %stdattlist;>
+<!ATTLIST code  %stdattlist;>
 
-<!ATTLIST str %stdattlist;
-              %encoding;>
-<!ATTLIST key %encoding;>
+<!ATTLIST str   %stdattlist; %encoding;>
+<!ATTLIST key   %encoding;>
 
 <!ATTLIST alias ref IDREF #IMPLIED>
