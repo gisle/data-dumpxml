@@ -1,0 +1,10 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Data::DumpXML::Parser;
+
+my $p = Data::DumpXML::Parser->new;
+my $x = $p->parsefile(shift || "test.xml");
+
+use Data::Dump qw(dump);
+print dump($x), "\n";
