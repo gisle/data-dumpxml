@@ -7,7 +7,7 @@ require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK=qw(dump_xml dump_xml2 dump);
 
-$VERSION = "1.03";  # $Date$
+$VERSION = "1.04";  # $Date$
 
 # configuration
 use vars qw($INDENT $INDENT_STYLE $XML_DECL $CPAN $NAMESPACE $NS_PREFIX $SCHEMA_LOCATION $DTD_LOCATION);
@@ -18,7 +18,7 @@ $CPAN = "http://www.cpan.org/modules/by-authors/Gisle_Aas/" unless defined $CPAN
 $NAMESPACE = $CPAN . "Data-DumpXML-$VERSION.xsd" unless defined $NAMESPACE;
 $NS_PREFIX = "" unless defined $NS_PREFIX;
 $SCHEMA_LOCATION = "" unless defined $SCHEMA_LOCATION;
-$DTD_LOCATION = $CPAN . "Data-DumpXML-1.02.dtd" unless defined $DTD_LOCATION;
+$DTD_LOCATION = $CPAN . "Data-DumpXML-1.04.dtd" unless defined $DTD_LOCATION;
 
 # other globals
 use vars qw($NL);
