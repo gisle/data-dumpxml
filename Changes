@@ -1,3 +1,12 @@
+2000-09-11  Gisle Aas <gisle@ActiveState.com>
+
+   Release 1.00
+
+   Compensate for the way references to references are stringified
+   in perl-5.7.0.
+
+
+
 2000-01-13  Gisle Aas <gisle@aas.no>
 
    Release 0.02
