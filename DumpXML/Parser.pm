@@ -116,3 +116,36 @@ sub Final
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Data::DumpXML - Dump arbitrary data structures as XML
+
+=head1 SYNOPSIS
+
+ use Data::DumpXML::Parser;
+
+ my $p = Data::DumpXML::Parser->new;
+ my $data = $p->parsefile(shift || "test.xml");
+
+=head1 DESCRIPTION
+
+The C<Data::DumpXML::Parser> is an C<XML::Parser> subclass that will
+recreate the data structure from the XML produced by C<Data::DumpXML>.
+A reference to an array of the values dumped are returned by the
+parsefile() method.
+
+=head1 SEE ALSO
+
+L<Data::DumpXML>, L<XML::Parser>
+
+=head1 AUTHOR
+
+Copyright 2000 Gisle Aas.
+
+This library is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+=cut
