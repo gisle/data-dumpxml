@@ -1,5 +1,4 @@
 Check if HTML::Parser is faster as decoding XML.
-Global SYSTEM ID for the DTD.
 Dump glob content
 Dump io
 Regexp objects?
@@ -7,4 +6,4 @@ LVALUE objects
 
 Use "a", "b", ... for IDs instead of "r1", "r2", "r3",...
 Dump empty strings as <str/>
-Expand documentation.
+
