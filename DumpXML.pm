@@ -9,6 +9,9 @@ require Exporter;
 
 $VERSION = "0.0001";  # $Date$
 
+use vars qw($INDENT);  # configuration
+$INDENT = " " unless defined $INDENT;
+
 use overload ();
 use vars qw(%seen %ref $count);
 
@@ -84,8 +87,11 @@ sub _dump
 	for my $key (sort keys %$rval) {
 	    my $val = \$rval->{$key};
 	    $val = _dump($$val);
-	    $val =~ s/^/  /gm;
-	    $out .= " <key>" . esc($key) . "</key>\n$val\n";
+	    if ($INDENT) {
+		$val =~ s/^/$INDENT$INDENT/gm;
+		$out .= $INDENT;
+	    }
+	    $out .= "<key>" . esc($key) . "</key>\n$val\n";
 	}
 	$out .= "</hash>";
 	return $out;
@@ -106,7 +112,9 @@ sub _dump
 sub format_list
 {
     my @elem = @_;
-    for (@elem) { s/^/ /gm; }   # indent
+    if ($INDENT) {
+	for (@elem) { s/^/$INDENT/gm; }
+    }
     return "\n" . join("\n", @elem);
 }
 
