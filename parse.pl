@@ -79,7 +79,11 @@ sub End
 	$p->{stack}[-1][-1] = ["array", $obj];
     }
     elsif ($tag eq "hash") {
-	$p->{stack}[-1][-1] = ["hash", ($objref = { @$obj })];
+	my $objref = {};
+	for (my $i = 0; $i < @$obj; $i += 2) {
+	    &hv_store($objref, $obj->[$i], $obj->[$i+1]);
+	}
+	$p->{stack}[-1][-1] = ["hash", $objref];
     }
     elsif ($tag eq "alias") {
 	my $id = $attr->{id};
