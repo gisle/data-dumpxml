@@ -7,7 +7,7 @@ require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK=qw(dump_xml dump);
 
-$VERSION = "0.01";  # $Date$
+$VERSION = "0.0001";  # $Date$
 
 use overload ();
 use vars qw(%seen %ref $count);
