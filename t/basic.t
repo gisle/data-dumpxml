@@ -1,4 +1,4 @@
-print "1..4\n";
+print "1..5\n";
 
 use strict;
 use Data::DumpXML qw(dump_xml);
@@ -25,6 +25,12 @@ bless $ref2, "ref-class";
 $xml = remove_space(dump_xml(bless {ref => $ref2}, "Bar"));
 print "not " unless $xml =~ m,<data><ref><hash class="Bar"><key>ref</key><ref><ref class="ref-class"><undef class="undef-class"/></ref></ref></hash></ref></data>,;
 print "ok 4\n";
+
+my @a = (1..3);
+my $a = \$a[1];
+$xml = remove_space(dump_xml($a, \@a));
+print "not " unless $xml =~ m,<data><ref><str id="r1">2</str></ref><ref><array><str>1</str><alias ref="r1"/><str>3</str></array></ref></data>,;
+print "ok 5\n";
 
 
 #------------
