@@ -3,7 +3,7 @@ package Data::DumpXML::Parser;
 use strict;
 use vars qw($VERSION @ISA);
 
-$VERSION = "1.00";
+$VERSION = "1.01";
 
 require XML::Parser;
 @ISA=qw(XML::Parser);
@@ -12,6 +12,7 @@ sub new
 {
     my($class, %arg) = @_;
     $arg{Style} = "Data::DumpXML::ParseStyle";
+    $arg{Namespaces} = 1;
     return $class->SUPER::new(%arg);
 }
 
@@ -171,7 +172,7 @@ L<Data::DumpXML>, L<XML::Parser>
 
 =head1 AUTHOR
 
-Copyright 2000 Gisle Aas.
+Copyright 2001 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

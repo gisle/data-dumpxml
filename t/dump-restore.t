@@ -20,7 +20,7 @@ my @tests = (
 );
 
 
-print "1.." . (@tests + 2) . "\n";
+print "1.." . (@tests + 3) . "\n";
 my $testno = 1;
 for (@tests) {
    my $xml1 = dump_xml(@$_);
@@ -54,4 +54,12 @@ my $p = Data::DumpXML::Parser->new(Blesser => sub {
 my $res = $p->parse($xml);
 
 print "not " unless ref($res->[0]) eq "Obj::Bar";
+print "ok " . $testno++ . "\n";
+
+# Test with namespace prefixes
+$xml = do { local $Data::DumpXML::NS_PREFIX="dump"; dump_xml($obj) };
+#print $xml;
+$p = Data::DumpXML::Parser->new();
+$res = $p->parse($xml);
+print "not " unless ref($res->[0]) eq "Obj" && $res->[0]{foo} eq 33;
 print "ok " . $testno++ . "\n";
