@@ -1,4 +1,4 @@
-Check if HTML::Parser is faster as decoding XML.
+Check if HTML::Parser is faster at decoding XML.
 Dump glob content
 Dump io
 Regexp objects?
