@@ -1,5 +1,5 @@
 <schema
-  xmlns='http://www.w3.org/2000/10/XMLSchema'
+  xmlns='http://www.w3.org/2001/XMLSchema'
   targetNamespace='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML/'
   xmlns:t='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML/'>
 
@@ -8,8 +8,16 @@
    <attribute name='class' type='string' use='optional'/>
   </attributeGroup>
 
+  <attribute name='encoding' use='default' value='plain'>
+   <simpleType>
+    <restriction base='string'>
+     <enumeration value='plain'/>
+     <enumeration value='base64'/>
+    </restriction>
+   </simpleType>
+  </attribute>
+
   <group name='scalar'>
-<!-- undef | str | ref | alias -->
    <choice>
     <element ref='t:undef'/>
     <element ref='t:str'/>
@@ -33,16 +41,13 @@
  </element>
 
  <element name='str'>
-  <complexType mixed='true'>
-   <attributeGroup ref='t:stdattlist'/>
-   <attribute name='encoding' use='default' value='plain'>
-    <simpleType>
-     <restriction base='string'>
-      <enumeration value='plain'/>
-      <enumeration value='base64'/>
-     </restriction>
-    </simpleType>
-   </attribute>
+  <complexType>
+   <simpleContent>
+    <extension base="string">
+     <attributeGroup ref='t:stdattlist'/>
+     <attribute ref='t:encoding'/>
+    </extension>
+   </simpleContent>
   </complexType>
  </element>
 
@@ -88,14 +93,7 @@
 
  <element name='key'>
   <complexType mixed='true'>
-   <attribute name='encoding' use='default' value='plain'>
-    <simpleType>
-     <restriction base='string'>
-      <enumeration value='plain'/>
-      <enumeration value='base64'/>
-     </restriction>
-    </simpleType>
-   </attribute>
+   <attribute ref='t:encoding'/>
   </complexType>
  </element>
 
