@@ -205,7 +205,7 @@ switch to base64 encoding here too when strange characters occur.
 
 =head1 SEE ALSO
 
-L<Data::Dump>, L<XML::Parser>
+L<Data::DumpXML::Parser>, L<XML::Parser>, L<Data::Dump>
 
 =head1 AUTHORS
 
