@@ -58,31 +58,20 @@ sub fix
     my $type = shift @$e;
     my $attr = shift @$e;
 
+    return $alias->{$attr->{ref} }if $type eq "alias";
+
     #print "T $type\n";
     my $ref;  # a reference to the thing
 
     if ($type eq "ref") {
 	$e = $e->[0];
-	if ($e->[0] eq "alias") {
-	    my $ref_attr = $e->[1]{ref};
-	    $ref = \$alias->{$ref_attr};
-	}
-	else {
-	    my $val = fix($e, $alias);
-	    $ref = \$val;
-	}
+	my $val = fix($e, $alias);
+	$ref = \$val;
     }
     elsif ($type eq "array") {
 	for (my $i = 0; $i < @$e; $i++) {
 	    my $cur = $e->[$i];
-	    my $type = $cur->[0];
-	    if ($type eq "alias") {
-		my $ref = $cur->[1]{ref};
-		$cur = $alias->{$ref};
-	    }
-	    else {
-		$cur = fix($cur, $alias);
-	    }
+	    $cur = fix($cur, $alias);
 	    &av_store($e, $i, $$cur);
 	}
 	$ref = $e;
@@ -97,13 +86,7 @@ sub fix
 
 	    my $val = $e->[$i+1];
 	    my $val_type = $val->[0];
-	    if ($val_type eq "alias") {
-		my $ref = $val->[1]{ref};
-		$val = $alias->{$ref};
-	    }
-	    else {
-		$val = fix($val, $alias);
-	    }
+	    $val = fix($val, $alias);
 	    hv_store(%hv, $key, $$val);
 	}
 	$ref = \%hv;
