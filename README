@@ -1,6 +1,8 @@
 Data::DumpXML
 
-Dump arbitrary perl data structures as XML.
+Dump arbitrary perl data structures as XML and restore them.  
+
+Requires XML::Parser, MIME::Base64 and Array::RefElem.
 
 
 Copyright 2000 Gisle Aas.
