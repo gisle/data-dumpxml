@@ -13,8 +13,8 @@ $xml = remove_space(dump_xml(\33));
 print "not " unless $xml =~ m,<data><ref><str>33</str></ref></data>,;
 print "ok 2\n";
 
-$xml = remove_space(dump_xml([33,"\0"]));
-print "not " unless $xml =~ m,<data><ref><array><str>33</str><str encoding="base64">AA==</str></array></ref></data>,;
+$xml = remove_space(dump_xml({"\1" => "\0"}));
+print "not " unless $xml =~ m,<data><ref><hash><key encoding="base64">AQ==</key><str encoding="base64">AA==</str></hash></ref></data>,;
 print "ok 3\n";
 
 my $undef = undef;
