@@ -136,18 +136,17 @@ Data::DumpXML - Dump arbitrary data structures as XML
 =head1 SYNOPSIS
 
  use Data::DumpXML qw(dump_xml);
-
- $str = dump_xml(@list)
+ $xml = dump_xml(@list)
 
 =head1 DESCRIPTION
 
 This module provide a single function called dump_xml() that takes a
-list of values as argument and produce a string as result.  For
+list of something as argument and produce a string as result.  For
 compatibility with C<Data::Dump> there is also an alias dump().
 
-The string returned is an XML document that represents the perl data
-structure.  The following DTD (?yeah, I now this is not really a DTD
-yet) is used:
+The string returned is an XML document that represents any perl data
+structure passed in.  The following DTD (yeah, I know this is not
+really a DTD yet) is used:
 
   <data>(undef|str|ref|alias)*</data>
   <undef/>
@@ -155,7 +154,7 @@ yet) is used:
   <ref>(undef|str|ref|alias|array|hash|glob|code)</ref>
   <alias/>
   <array>(undef|str|ref|alias)*</array>
-  <hash)(key (undef|str|ref|alias))*</hash>
+  <hash>(key (undef|str|ref|alias))*</hash>
   <key>...</key>
   <glob/>
   <code/>
@@ -165,10 +164,9 @@ STDERR instead of being returned.
 
 =head1 BUGS
 
-It appears that character entity references for most characters below
-32 ('space') is illegal.  This can still be generated for hash keys.
-Should switch to base64 encoding here too when strange characters
-occur.
+Character entity references for most characters below 32 ('space') is
+illegal XML.  This can still be generated for hash keys.  Should
+switch to base64 encoding here too when strange characters occur.
 
 =head1 SEE ALSO
 
