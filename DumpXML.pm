@@ -84,10 +84,10 @@ sub _dump {
     if ($type eq "SCALAR" || $type eq "REF") {
 	return "<${prefix}undef$class$id/>"
 	    unless defined $$rval;
-	return "<${prefix}ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
+	return "<${prefix}ref$class$id>" . format_list(_dump($$rval, 1)) . "</${prefix}ref>"
 	    if ref $$rval;
 	my($str, $enc) = esc($$rval);
-	return "<${prefix}str$class$id$enc>$str</str>";
+	return "<${prefix}str$class$id$enc>$str</${prefix}str>";
     }
     elsif ($type eq "ARRAY") {
 	return "<${prefix}array$class$id/>" unless @$rval;
