@@ -1,3 +1,18 @@
+2000-01-13  Gisle Aas <gisle@aas.no>
+
+   Release 0.02
+
+   Fix &quot; typo; spotted by Matt Sergeant <msergeant@hotmail.com>
+
+   Don't encode ">", just because we can.
+
+   Deal with binary hash keys.
+
+   The parser will now use av_push instead of av_store and a index to
+   build arrays.
+
+
+
 2000-01-10  Gisle Aas <gisle@aas.no>
 
    Release 0.01
