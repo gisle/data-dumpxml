@@ -1,6 +1,5 @@
 Check if HTML::Parser is faster as decoding XML.
 Global SYSTEM ID for the DTD.
-The key might need encoding when strange characters occur.
 Dump glob content
 Dump io
 Regexp objects?
