@@ -13,7 +13,7 @@
 
    Documentation improved a bit.
 
-   Data::DumpXML::Parser will not turn on the 'Namespaces'
+   Data::DumpXML::Parser will now turn on the 'Namespaces'
    option automatically.
 
    Data-DumpXML.xsd fixes:
