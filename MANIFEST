@@ -6,5 +6,6 @@ Makefile.PL
 README
 TODO
 dumpxml.dtd
+dumpxml.xsd
 t/basic.t
 t/dump-restore.t

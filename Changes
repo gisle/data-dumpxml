@@ -1,3 +1,11 @@
+2001-12-11  Gisle Aas <gisle@ActiveState.com>
+
+   Release 1.02
+
+   Added namespace support.  Added a schema.
+
+
+
 2000-09-19  Gisle Aas <gisle@ActiveState.com>
 
    Release 1.01
