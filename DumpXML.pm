@@ -46,7 +46,7 @@ sub _dump
 	$type  = $2;
 	$id    = $3;
     } else {
-	die "Can't parse " . overload::StrVal($rval);
+	return qq(<!-- Can\'t parse \") . overload::StrVal($rval) . qq(\" -->);
     }
 
     if (my $seq = $seen{$id}) {
@@ -98,7 +98,7 @@ sub _dump
 	#warn "Can't handle $type data";
 	return "<!-- Unknown type $type -->";
     }
-    die;
+    die "Assert";
 }
 
 sub format_list
