@@ -1,0 +1,9 @@
+use Data::DumpXML qw(dump);
+
+use HTTP::Request;
+$req = HTTP::Request->new(GET => "http://foo/");
+$req->date(time);
+$req->content("\0\0\x9" x 30);
+
+print dump($req);
+

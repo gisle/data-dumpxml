@@ -1,0 +1,5 @@
+$a = 1;
+
+use Data::DumpXML qw(dump);
+
+print dump($a, $a, \$a, [$a, \$a]);

@@ -1,0 +1,8 @@
+$hash{foo} = "foo";
+$hash{bar} = "bar";
+$a = \$hash{foo};
+
+use Data::DumpXML qw(dump);
+
+print dump($a, \%hash);
+
