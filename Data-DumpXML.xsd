@@ -1,7 +1,7 @@
 <schema
   xmlns='http://www.w3.org/2001/XMLSchema'
-  targetNamespace='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML/'
-  xmlns:t='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML/'>
+  targetNamespace='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.03.xsd'
+  xmlns:t='http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.03.xsd'>
 
   <attributeGroup name='stdattlist'>
    <attribute name='id' type='ID' use='optional'/>
@@ -83,17 +83,19 @@
   <complexType>
    <sequence minOccurs='0' maxOccurs='unbounded'>
     <element ref='t:key'/>
-    <sequence>
-     <group ref='t:scalar'/>
-    </sequence>
+    <group ref='t:scalar'/>
    </sequence>
    <attributeGroup ref='t:stdattlist'/>
   </complexType>
  </element>
 
  <element name='key'>
-  <complexType mixed='true'>
-   <attribute ref='t:encoding'/>
+  <complexType>
+   <simpleContent>
+    <extension base="string">
+     <attribute ref='t:encoding'/>
+    </extension>
+   </simpleContent>
   </complexType>
  </element>
 
