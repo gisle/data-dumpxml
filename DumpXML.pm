@@ -10,7 +10,8 @@ require Exporter;
 $VERSION = "1.03";  # $Date$
 
 # configuration
-use vars qw($INDENT $XML_DECL $CPAN $NAMESPACE $NS_PREFIX $SCHEMA_LOCATION $DTD_LOCATION);
+use vars qw($INDENT $INDENT_STYLE $XML_DECL $CPAN $NAMESPACE $NS_PREFIX $SCHEMA_LOCATION $DTD_LOCATION);
+$INDENT_STYLE = "XML" unless defined $INDENT_STYLE;
 $XML_DECL = 1 unless defined $XML_DECL;
 $INDENT = " " unless defined $INDENT;
 $CPAN = "http://www.cpan.org/modules/by-authors/Gisle_Aas/" unless defined $CPAN;
@@ -18,6 +19,9 @@ $NAMESPACE = $CPAN . "Data-DumpXML-$VERSION.xsd" unless defined $NAMESPACE;
 $NS_PREFIX = "" unless defined $NS_PREFIX;
 $SCHEMA_LOCATION = "" unless defined $SCHEMA_LOCATION;
 $DTD_LOCATION = $CPAN . "Data-DumpXML-1.02.dtd" unless defined $DTD_LOCATION;
+
+# other globals
+use vars qw($NL);
 
 
 use overload ();
@@ -34,6 +38,8 @@ sub dump_xml {
     local %ref;
     local $count = 0;
     local $prefix = ($NAMESPACE && $NS_PREFIX) ? "$NS_PREFIX:" : "";
+
+    local $NL = ($INDENT) ? "\n" : "";
 
     my $out = "";
     $out .= qq(<?xml version="1.0" encoding="US-ASCII"?>\n) if $XML_DECL;
@@ -95,7 +101,7 @@ sub _dump {
 	       "</${prefix}array>";
     }
     elsif ($type eq "HASH") {
-	my $out = "<${prefix}hash$class$id>\n";
+	my $out = "<${prefix}hash$class$id>$NL";
 	for my $key (sort keys %$rval) {
 	    my $val = \$rval->{$key};
 	    $val = _dump($$val);
@@ -104,7 +110,11 @@ sub _dump {
 		$out .= $INDENT;
 	    }
 	    my($str, $enc) = esc($key);
-	    $out .= "<${prefix}key$enc>$str</${prefix}key>\n$val\n";
+	    $out .= "<${prefix}key$enc>$str</${prefix}key>$NL$val$NL";
+	}
+	if ($INDENT_STYLE eq "Lisp") {
+	    # kill final NL
+	    substr($out, -length($NL)) = "";
 	}
 	$out .= "</${prefix}hash>";
 	return $out;
@@ -127,7 +137,7 @@ sub format_list {
     if ($INDENT) {
 	for (@elem) { s/^/$INDENT/gm; }
     }
-    return "\n" . join("\n", @elem);
+    return join($NL, "", @elem, ($INDENT_STYLE eq "Lisp" ? () : ("")) );
 }
 
 # put a string value in double quotes
@@ -148,7 +158,7 @@ sub esc {
 	# \x7f is special
 	# \x80-\xff will be mangled into UTF-8
 	require MIME::Base64;
-	my $nl = (length($_) < 40) ? "" : "\n";
+	my $nl = (length($_) < 40) ? "" : $NL;
 	my $b64 = MIME::Base64::encode($_, $nl);
 	return $nl.$b64, qq( encoding="base64");
     }
@@ -176,10 +186,11 @@ Data::DumpXML - Dump arbitrary data structures as XML
 =head1 DESCRIPTION
 
 This module provide a single function called dump_xml() that takes a
-list of something as argument and produce a string as result.
-
+list of perl values as argument and produce a string as result.
 The string returned is an XML document that represents any perl data
-structure passed in.  The following data model is used:
+structures passed in.  Reference loops are handled correctly.
+
+The following data model is used:
 
    data : scalar*
    scalar = undef | str | ref | alias
@@ -190,36 +201,96 @@ structure passed in.  The following data model is used:
 The distribution comes with an XML Schema and a DTD that more formally
 describe this structure.
 
-As an example of the XML documents producted; the following call:
+As an example of the XML documents produced; the following call:
 
   $a = bless [1,2], "Foo";
-  $a->[2] = \$a;
-  $b = $a;
-  dump_xml($a, $b);
+  dump_xml($a);
 
 will produce:
 
   <?xml version="1.0" encoding="US-ASCII"?>
-  <data xmlns="http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.02.xsd">
-   <ref id="r1">
-    <array class="Foo" id="r2">
+  <data xmlns="http://www.cpan.org/.../Data-DumpXML.xsd">
+   <ref>
+    <array class="Foo">
      <str>1</str>
      <str>2</str>
-     <ref>
-      <alias ref="r1"/></ref></array></ref>
-   <ref>
-    <alias ref="r2"/></ref></data>
+    </array>
+   </ref>
+  </data>
 
 If dump_xml() is called in void context, then the dump will be printed
-on STDERR instead of being returned.  For compatibility with
-C<Data::Dump> there is also an alias for dump_xml() simply called
-dump().
-
-You can set the variable $Data::DumpXML::INDENT to control indenting
-before calling dump_xml().  To suppress indenting set it as "".
+on STDERR automatically.  For compatibility with C<Data::Dump> there
+is also an alias for dump_xml() simply called dump().
 
 The C<Data::DumpXML::Parser> is a class that can restore
-datastructures dumped by dump_xml().
+data structures dumped by dump_xml().
+
+
+=head2 Configuration variables
+
+The generated XML is influenced by a set of configuration variables.
+If you modify them, then it is a good idea to localize the effect. E.g.:
+
+  sub my_dump_xml {
+      local $Data::DumpXML::INDENT = "";
+      local $Data::DumpXML::XML_DECL = 0;
+      local $Data::DumpXML::DTD_LOCATION = "";
+      local $Data::DumpXML::NS_PREFIX = "dumpxml";
+
+      return dump_xml(@_);
+  }
+
+The variables are:
+
+=over
+
+=item $Data::DumpXML::INDENT
+
+You can set the variable $Data::DumpXML::INDENT to control the amount
+of indenting.  The variable contains the whitespace you want to be
+used for each level of indenting.  The default is a single space.  To
+suppress indenting set it as "".
+
+=item $Data::DumpXML::INDENT_STYLE
+
+This variable controls where end element are placed.  If you set this
+variable to the value "Lisp" then end tags are not prefixed by NL.
+This give a more compact output.
+
+=item $Data::DumpXML::XML_DECL
+
+This boolean variable controls whether an XML declaration should be
+prefixed to the output.  The XML declaration is the <?xml ...?>
+thingy.  The default is 1.  Set this value to 0 to suppress the
+declaration.
+
+=item $Data::DumpXML::NAMESPACE
+
+This variable contains the namespace used for the the XML elements.
+The default is to let this be a URI that actually resolve to the XML
+Schema on CPAN.  Set it to "" to disable use of namespaces.
+
+=item $Data::DumpXML::NS_PREFIX
+
+This variable contains the namespace prefix to use on the elements.
+The default is "" which means that a default namespace will be declared.
+
+=item $Data::DumpXML::SCHEMA_LOCATION
+
+This variable contains the location of the XML Schema.  If this
+variable is non-empty, then an C<xsi:schemaLocation> attribute will be
+added the top level C<data> element.  The default is to not include
+this as the location can be guessed from the default XML namespace
+used.
+
+=item $Data::DumpXML::DTD_LOCATION
+
+This variable contains the location of the DTD.  If this variable is
+non-empty, then a <!DOCTYPE ...> will be included in the output.  The
+default is to point to the DTD on CPAN.  Set it to "" to suppress the
+<!DOCTYPE ...> line.
+
+=back
 
 =head1 BUGS
 
