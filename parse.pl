@@ -28,6 +28,13 @@ sub Start
     push(@{$p->{stack}}, $obj);
 }
 
+sub Char
+{
+    my($p, $str) = @_;
+    return unless $p->{in_str};
+    push(@{$p->{stack}[-1]}, $str);
+}
+
 sub End
 {
     my($p, $tag) = @_;
@@ -83,13 +90,6 @@ sub End
 	#print "BLESS $objref\n";
 	bless $objref, $class;
     }
-}
-
-sub Char
-{
-    my($p, $str) = @_;
-    return unless $p->{in_str};
-    push(@{$p->{stack}[-1]}, $str);
 }
 
 sub Final
