@@ -7,3 +7,4 @@ README
 dumpxml-parse
 dumpxml.dtd
 t/basic.t
+t/dump-restore.t
