@@ -43,5 +43,6 @@ sub remove_space
 {
     my $xml = shift;
     $xml =~ s/>\s+</></g;
+    $xml =~ s/\s+xmlns="[^"]*"//;
     $xml;
 }

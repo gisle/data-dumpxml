@@ -1,9 +1,9 @@
-use Data::DumpXML qw(dump);
+use Data::DumpXML qw(dump_xml2);
 
 use HTTP::Request;
 $req = HTTP::Request->new(GET => "http://foo/");
 $req->date(time);
 $req->content("\0\0\x9" x 30);
 
-print dump($req, $req);
+print dump_xml2($req, $req);
 

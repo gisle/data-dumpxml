@@ -5,29 +5,52 @@ use vars qw(@EXPORT_OK $VERSION);
 
 require Exporter;
 *import = \&Exporter::import;
-@EXPORT_OK=qw(dump_xml dump);
+@EXPORT_OK=qw(dump_xml dump_xml2 dump);
 
-$VERSION = "1.01";  # $Date$
+$VERSION = "1.02";  # $Date$
 
-use vars qw($INDENT);  # configuration
+# configuration
+use vars qw($INDENT $NAMESPACE $NS_PREFIX $DTD_REF $XML_DECL $SCHEMA_LOCATION);
 $INDENT = " " unless defined $INDENT;
+$NAMESPACE = "http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-$VERSION.xsd"
+    unless defined $NAMESPACE;
+$NS_PREFIX = "" unless defined $NS_PREFIX;
+$DTD_REF = "dumpxml.dtd" unless defined $DTD_REF;
+$XML_DECL = 1 unless defined $XML_DECL;
+$SCHEMA_LOCATION = "" unless defined $SCHEMA_LOCATION;
+
 
 use overload ();
-use vars qw(%seen %ref $count);
+use vars qw(%seen %ref $count $prefix);
 
 #use HTTP::Date qw(time2iso);
 
-sub dump_xml
-{
+sub dump_xml2 {
+    local $DTD_REF = 0;
+    local $XML_DECL = 0;
+    dump_xml(@_);
+}
+
+sub dump_xml {
     local %seen;
     local %ref;
     local $count = 0;
-    my $out = qq(<?xml version="1.0" encoding="US-ASCII"?>\n);
-    $out .= qq(<!DOCTYPE data SYSTEM "dumpxml.dtd">\n);
+    local $prefix = ($NAMESPACE && $NS_PREFIX) ? "$NS_PREFIX:" : "";
+
+    my $out = "";
+    $out .= qq(<?xml version="1.0" encoding="US-ASCII"?>\n) if $XML_DECL;
+    $out .= qq(<!DOCTYPE data SYSTEM "$DTD_REF">\n) if $DTD_REF;
     #$out .= qq(<data time="@{[time2iso()]}">);
-    $out .= "<data>";
+
+    $out .= "<${prefix}data";
+    $out .= " " . ($NS_PREFIX ? "xmlns:$NS_PREFIX" : "xmlns") . qq(="$NAMESPACE")
+	if $NAMESPACE;
+    $out .= qq( xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="$SCHEMA_LOCATION")
+	if $SCHEMA_LOCATION;
+
+    $out .= ">";
     $out .= format_list(map _dump($_), @_);
-    $out .= "</data>\n";
+    $out .= "</${prefix}data>\n";
 
     $count = 0;
     $out =~ s/\01/$ref{++$count} ? qq( id="r$ref{$count}") : ""/ge;
@@ -38,8 +61,7 @@ sub dump_xml
 
 *dump = \&dump_xml;
 
-sub _dump
-{
+sub _dump {
     my $rval = \$_[0]; shift;
     my $deref = shift;
     $rval = $$rval if $deref;
@@ -55,7 +77,7 @@ sub _dump
 
     if (my $seq = $seen{$id}) {
 	my $ref_no = $ref{$seq} || ($ref{$seq} = keys(%ref) + 1);
-	return qq(<alias ref="r$ref_no"/>);
+	return qq(<${prefix}alias ref="r$ref_no"/>);
     }
     $seen{$id} = ++$count;
 
@@ -63,20 +85,20 @@ sub _dump
     $id = "\1";  # magic that is removed or expanded to ' id="r1"' in the end.
 
     if ($type eq "SCALAR" || $type eq "REF") {
-	return "<undef$class$id/>"
+	return "<${prefix}undef$class$id/>"
 	    unless defined $$rval;
-	return "<ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
+	return "<${prefix}ref$class$id>" . format_list(_dump($$rval, 1)) . "</ref>"
 	    if ref $$rval;
 	my($str, $enc) = esc($$rval);
-	return "<str$class$id$enc>$str</str>";
+	return "<${prefix}str$class$id$enc>$str</str>";
     }
     elsif ($type eq "ARRAY") {
-	return "<array$class$id/>" unless @$rval;
-	return "<array$class$id>" . format_list(map _dump($_), @$rval) .
-	       "</array>";
+	return "<${prefix}array$class$id/>" unless @$rval;
+	return "<${prefix}array$class$id>" . format_list(map _dump($_), @$rval) .
+	       "</${prefix}array>";
     }
     elsif ($type eq "HASH") {
-	my $out = "<hash$class$id>\n";
+	my $out = "<${prefix}hash$class$id>\n";
 	for my $key (sort keys %$rval) {
 	    my $val = \$rval->{$key};
 	    $val = _dump($$val);
@@ -85,16 +107,16 @@ sub _dump
 		$out .= $INDENT;
 	    }
 	    my($str, $enc) = esc($key);
-	    $out .= "<key$enc>$str</key>\n$val\n";
+	    $out .= "<${prefix}key$enc>$str</${prefix}key>\n$val\n";
 	}
-	$out .= "</hash>";
+	$out .= "</${prefix}hash>";
 	return $out;
     }
     elsif ($type eq "GLOB") {
-	return "<glob$class$id/>";
+	return "<${prefix}glob$class$id/>";
     }
     elsif ($type eq "CODE") {
-	return "<code$class$id/>";
+	return "<${prefix}code$class$id/>";
     }
     else {
 	#warn "Can't handle $type data";
@@ -103,8 +125,7 @@ sub _dump
     die "Assert";
 }
 
-sub format_list
-{
+sub format_list {
     my @elem = @_;
     if ($INDENT) {
 	for (@elem) { s/^/$INDENT/gm; }
@@ -161,39 +182,16 @@ This module provide a single function called dump_xml() that takes a
 list of something as argument and produce a string as result.
 
 The string returned is an XML document that represents any perl data
-structure passed in.  The following DTD is used:
+structure passed in.  The following data model is used:
 
-  <!DOCTYPE data [
-   <!ENTITY % scalar "undef | str | ref | alias">
+   data : scalar*
+   scalar = undef | str | ref | alias
+   ref : scalar | array | hash | glob | code
+   array: scalar*
+   hash: (key scalar)*
 
-   <!ELEMENT data (%scalar;)*>
-   <!ELEMENT undef EMPTY>
-   <!ELEMENT str (#PCDATA)>
-   <!ELEMENT ref (%scalar; | array | hash | glob | code)>
-   <!ELEMENT alias EMPTY>
-   <!ELEMENT array (%scalar;)*>
-   <!ELEMENT hash  (key, (%scalar;))*>
-   <!ELEMENT key (#PCDATA)>
-   <!ELEMENT glob EMPTY>
-   <!ELEMENT code EMPTY>
-
-   <!ENTITY % stdattlist 'id       ID             #IMPLIED
-                          class    CDATA          #IMPLIED'>
-   <!ENTITY % encoding   'encoding (plain|base64) "plain"'>
-
-   <!ATTLIST undef %stdattlist;>
-   <!ATTLIST ref %stdattlist;>
-   <!ATTLIST undef %stdattlist;>
-   <!ATTLIST array %stdattlist;>
-   <!ATTLIST hash %stdattlist;>
-   <!ATTLIST glob %stdattlist;>
-   <!ATTLIST code %stdattlist;>
-
-   <!ATTLIST str %stdattlist; %encoding;>
-   <!ATTLIST key %encoding;>
-
-   <!ATTLIST alias ref IDREF #IMPLIED>
-  ]>
+The distribution comes with an XML Schema and a DTD that more formally
+describe this structure.
 
 As an example of the XML documents producted; the following call:
 
@@ -205,7 +203,7 @@ As an example of the XML documents producted; the following call:
 will produce:
 
   <?xml version="1.0" encoding="US-ASCII"?>
-  <data>
+  <data xmlns="http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-1.02.xsd">
    <ref id="r1">
     <array class="Foo" id="r2">
      <str>1</str>
@@ -249,7 +247,7 @@ based on C<Data::Dump>.
 The C<Data::Dump> module was written by Gisle Aas, based on
 C<Data::Dumper> by Gurusamy Sarathy <gsar@umich.edu>.
 
- Copyright 1998-2000 Gisle Aas.
+ Copyright 1998-2001 Gisle Aas.
  Copyright 1996-1998 Gurusamy Sarathy.
 
 This library is free software; you can redistribute it and/or
