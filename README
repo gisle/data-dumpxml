@@ -1,0 +1,9 @@
+Data::DumpXML
+
+Dump arbitrary perl data structures as XML.
+
+
+Copyright 2000 Gisle Aas.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
