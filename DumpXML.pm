@@ -20,7 +20,7 @@ sub dump_xml
     local %ref;
     local $count = 0;
     my $out = qq(<?xml version="1.0" encoding="US-ASCII"?>\n);
-    $out .= `cat dumpxml.dtd`;
+    #$out .= `cat dumpxml.dtd`;
     #$out .= qq(<!DOCTYPE dumpxml SYSTEM "dumpxml.dtd">\n);
     #$out .= qq(<data time="@{[time2iso()]}">);
     $out .= "<data>";
