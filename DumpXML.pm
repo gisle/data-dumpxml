@@ -162,15 +162,15 @@ The string returned is an XML document that represents any perl data
 structure passed in.  The following DTD is used:
 
   <!DOCTYPE data [
-   <!ENTITY % listtype "undef | str | ref | alias">
+   <!ENTITY % scalar "undef | str | ref | alias">
 
-   <!ELEMENT data (%listtype;)*>
+   <!ELEMENT data (%scalar;)*>
    <!ELEMENT undef EMPTY>
    <!ELEMENT str (#PCDATA)>
-   <!ELEMENT ref (%listtype; | array | hash | glob | code)>
+   <!ELEMENT ref (%scalar; | array | hash | glob | code)>
    <!ELEMENT alias EMPTY>
-   <!ELEMENT array (%listtype;)*>
-   <!ELEMENT hash  (key, (%listtype;))*>
+   <!ELEMENT array (%scalar;)*>
+   <!ELEMENT hash  (key, (%scalar;))*>
    <!ELEMENT key (#PCDATA)>
    <!ELEMENT glob EMPTY>
    <!ELEMENT code EMPTY>
