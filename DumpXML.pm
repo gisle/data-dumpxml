@@ -315,7 +315,7 @@ based on C<Data::Dump>.
 The C<Data::Dump> module was written by Gisle Aas, based on
 C<Data::Dumper> by Gurusamy Sarathy <gsar@umich.edu>.
 
- Copyright 1998-2001 Gisle Aas.
+ Copyright 1998-2002 Gisle Aas.
  Copyright 1996-1998 Gurusamy Sarathy.
 
 This library is free software; you can redistribute it and/or

@@ -5,7 +5,7 @@ Dump arbitrary perl data structures as XML and restore them.
 Requires XML::Parser, MIME::Base64 and Array::RefElem.
 
 
-Copyright 2000 Gisle Aas.
+Copyright 2000-2002 Gisle Aas.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
