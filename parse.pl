@@ -86,14 +86,14 @@ sub End
 	$p->{stack}[-1][-1] = ["hash", $objref];
     }
     elsif ($tag eq "alias") {
-	my $id = $attr->{id};
+	my $id = $attr->{ref};
 	#print "ALIAS $id\n";
 	eval {
-	    &av_store($p->{stack}[-1], -1, ${$p->{id}{$id}});
+	    &av_store($p->{stack}[-1], -1, ${$p->{alias}{$id}});
 	};
 	if ($@ && $@ =~ /^Not a SCALAR reference/) {
 	    # assuming the thing above is <ref>...
-	    $p->{stack}[-1][-1] = ["alias", $p->{id}{$id}];
+	    $p->{stack}[-1][-1] = ["alias", $p->{alias}{$id}];
 	}
 	$objref = \$p->{stack}[-1][-1];
     }
@@ -107,8 +107,8 @@ sub End
 	bless $objref, $class;
     }
 
-    if ((my $id = $attr->{id}) && $tag ne "alias") {
-	$p->{id}{$id} = $objref;
+    if ((my $id = $attr->{id})) {
+	$p->{alias}{$id} = $objref;
     }
 }
 
