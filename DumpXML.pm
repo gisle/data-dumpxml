@@ -21,14 +21,14 @@ sub dump_xml
     local $count = 0;
     my $out = qq(<?xml version="1.0" encoding="US-ASCII"?>\n);
     #$out .= `cat dumpxml.dtd`;
-    #$out .= qq(<!DOCTYPE dumpxml SYSTEM "dumpxml.dtd">\n);
+    $out .= qq(<!DOCTYPE data SYSTEM "dumpxml.dtd">\n);
     #$out .= qq(<data time="@{[time2iso()]}">);
     $out .= "<data>";
     $out .= format_list(map _dump($_), @_);
     $out .= "</data>\n";
 
     $count = 0;
-    $out =~ s/\01/$ref{++$count} ? qq( id="$ref{$count}") : ""/ge;
+    $out =~ s/\01/$ref{++$count} ? qq( id="r$ref{$count}") : ""/ge;
 
     print STDERR $out unless defined wantarray;
     $out;
@@ -53,7 +53,7 @@ sub _dump
 
     if (my $seq = $seen{$id}) {
 	my $ref_no = $ref{$seq} || ($ref{$seq} = keys(%ref) + 1);
-	return qq(<alias id="$ref_no"/>);
+	return qq(<alias ref="r$ref_no"/>);
     }
     $seen{$id} = ++$count;
 
