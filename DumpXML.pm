@@ -10,14 +10,14 @@ require Exporter;
 $VERSION = "1.02";  # $Date$
 
 # configuration
-use vars qw($INDENT $NAMESPACE $NS_PREFIX $DTD_REF $XML_DECL $SCHEMA_LOCATION);
-$INDENT = " " unless defined $INDENT;
-$NAMESPACE = "http://www.cpan.org/modules/by-authors/Gisle_Aas/Data-DumpXML-$VERSION.xsd"
-    unless defined $NAMESPACE;
-$NS_PREFIX = "" unless defined $NS_PREFIX;
-$DTD_REF = "dumpxml.dtd" unless defined $DTD_REF;
+use vars qw($INDENT $XML_DECL $CPAN $NAMESPACE $NS_PREFIX $SCHEMA_LOCATION $DTD_LOCATION);
 $XML_DECL = 1 unless defined $XML_DECL;
+$INDENT = " " unless defined $INDENT;
+$CPAN = "http://www.cpan.org/modules/by-authors/Gisle_Aas/" unless defined $CPAN;
+$NAMESPACE = $CPAN . "Data-DumpXML-$VERSION.xsd" unless defined $NAMESPACE;
+$NS_PREFIX = "" unless defined $NS_PREFIX;
 $SCHEMA_LOCATION = "" unless defined $SCHEMA_LOCATION;
+$DTD_LOCATION = $CPAN . "Data-DumpXML-$VERSION.dtd" unless defined $DTD_LOCATION;
 
 
 use overload ();
@@ -26,8 +26,8 @@ use vars qw(%seen %ref $count $prefix);
 #use HTTP::Date qw(time2iso);
 
 sub dump_xml2 {
-    local $DTD_REF = 0;
-    local $XML_DECL = 0;
+    local $DTD_LOCATION = "";
+    local $XML_DECL = "";
     dump_xml(@_);
 }
 
@@ -39,7 +39,7 @@ sub dump_xml {
 
     my $out = "";
     $out .= qq(<?xml version="1.0" encoding="US-ASCII"?>\n) if $XML_DECL;
-    $out .= qq(<!DOCTYPE data SYSTEM "$DTD_REF">\n) if $DTD_REF;
+    $out .= qq(<!DOCTYPE data SYSTEM "$DTD_LOCATION">\n) if $DTD_LOCATION;
     #$out .= qq(<data time="@{[time2iso()]}">);
 
     $out .= "<${prefix}data";
