@@ -17,7 +17,7 @@ sub new
 
 package Data::DumpXML::ParseStyle;
 
-use Array::RefElem qw(av_store hv_store);
+use Array::RefElem qw(av_push hv_store);
 
 sub Init
 {
@@ -70,9 +70,8 @@ sub End
     }
     elsif ($tag eq "array" || $tag eq "data") {
 	my @val;
-	my $i = 0;
 	for (@$obj) {
-	    av_store(@val, $i++, $$_);
+	    av_push(@val, $$_);
 	}
 	$ref = \@val;
     }
