@@ -1,0 +1,12 @@
+<!DOCTYPE dumpxml [
+  <!ELEMENT data (undef | str | ref | alias)*>
+  <!ELEMENT undef EMPTY>
+  <!ELEMENT str (#PCDATA)>
+  <!ELEMENT ref (undef | str | ref | alias | array | hash | glob | code)>
+  <!ELEMENT alias EMPTY>
+  <!ELEMENT array (undef | str | ref | alias)*>
+  <!ELEMENT hash  (key, (undef | str | ref | alias))*>
+  <!ELEMENT key (#PCDATA)>
+  <!ELEMENT glob EMPTY>
+  <!ELEMENT code EMPTY>
+]>
